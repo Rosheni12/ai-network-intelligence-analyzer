@@ -1,0 +1,70 @@
+.stApp {
+    background-color: #0E1117;
+}
+
+/* Headers */
+h1 {
+    color: #4FC3F7;
+    font-weight: 700;
+}
+
+h2 {
+    color: white;
+}
+
+h3 {
+    color: #B0BEC5;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #161B22;
+}
+
+/* Metric Cards */
+div[data-testid="metric-container"] {
+    background: #161B22;
+    border: 1px solid #2D333B;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0px 3px 12px rgba(0,0,0,0.35);
+}
+
+/* Metric labels */
+div[data-testid="metric-container"] label {
+    color: #9CA3AF !important;
+}
+
+/* Metric values */
+div[data-testid="metric-container"] div {
+    color: white;
+}
+
+/* Buttons */
+.stButton>button {
+    background-color: #1976D2;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+.stButton>button:hover {
+    background-color: #1565C0;
+}
+
+/* Tables */
+thead tr th {
+    background-color: #1976D2 !important;
+    color: white !important;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #1A1F27;
+}
+
+/* Divider */
+hr {
+    border: 1px solid #30363D;
+}
