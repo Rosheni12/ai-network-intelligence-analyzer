@@ -11,8 +11,8 @@ print("AI Model Loaded Successfully!\n")
 # Sample packet data
 sample_packet = pd.DataFrame([
     {
-        "packet_size": 100,
-        "protocol_encoded": 1,   # TCP
+        "packet_size": 90,
+        "protocol_encoded": 2,  
         "is_https": 1,
         "is_dns": 0
     }
