@@ -2,27 +2,18 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# -----------------------------------
-# Load Environment Variables
-# -----------------------------------
-
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 
 if API_KEY:
     genai.configure(api_key=API_KEY)
-    model = genai.GenerativeModel("gemini-flash-latest")
+    model = genai.GenerativeModel("gemini-2.5-flash")
 else:
     model = None
 
 
-# -----------------------------------
-# Generate AI Report
-# -----------------------------------
-
-def generate_ai_report(summary):
-
+def generate_ai_report(network_data: str) -> str:
     if model is None:
         return (
             "❌ Gemini API key not found.\n\n"
@@ -30,90 +21,108 @@ def generate_ai_report(summary):
             "GEMINI_API_KEY=YOUR_API_KEY"
         )
 
-    network_data = f"""
-Network Summary
-
-Total Packets: {summary.get('total_packets')}
-Total Clients: {summary.get('total_clients')}
-Anomalies: {summary.get('anomaly_count')}
-Health Score: {summary.get('network_health_score')}
-Health Grade: {summary.get('health_grade')}
-Risk Level: {summary.get('risk_level')}
-Privacy Score: {summary.get('privacy_score')}
-HTTPS Percentage: {summary.get('https_percentage')}%
-Carbon Footprint: {summary.get('carbon_footprint')} g CO₂
-"""
-
     prompt = f"""
-You are a Senior Cybersecurity Analyst preparing a report for company management.
+You are IBM watsonx Security AI, an enterprise Network Intelligence Engine and AI SOC Analyst.
 
-Analyze the following network summary.
+You interpret network telemetry produced by an AI Network Intelligence Analyzer that uses:
+• Random Forest Classification
+• Isolation Forest Anomaly Detection
+• AI Risk Scoring
+• Feature Engineering
+• Network Behaviour Analytics
 
+Network Metrics:
 {network_data}
 
-Return the response in Markdown.
+YOUR JOB:
+- Perform deep investigation by correlating metrics.
+- Always explain WHY conclusions follow from the metrics.
+- Never repeat raw numbers.
+- Explicitly reference key metrics (e.g. 82.11 health score, 4.97% anomaly rate, 87.07% HTTPS adoption, 71.69 privacy score) in observations.
+- Mention Random Forest and Isolation Forest where relevant to highlight AI analysis.
+- Only make conclusions clearly supported by the supplied metrics.
 
-Formatting Rules:
+Return the report EXACTLY in this format. No duplicate titles. No extra text.
 
-- Use ### for the title.
-- Use #### for section headings.
-- Never use # or ## headings.
-- Keep the report between 250 and 350 words.
-- Do not repeat every metric.
-- Focus on analysis and recommendations.
-- Write in a professional but easy-to-understand style.
+📑 AI Network Intelligence Report
+═══════════════════════════════════════
+🟢 Overall Network Status
+Overall Status :
+Health Grade :
+Threat Severity :
+Immediate Action :
+Write ONLY 2 very short sentences.
+═══════════════════════════════════════
+🤖 AI Executive Summary
+Exactly 5 bullets. Max 12 words each.
+═══════════════════════════════════════
+🔍 Key Findings
+Exactly FIVE findings. Keep every field 1 short sentence max. Reference metrics and models.
 
-Structure:
+Finding 1
+Observation :
+Root Cause :
+Security Impact :
+Business Impact :
+Priority :
+Recommended Action :
 
-### 📑 AI Network Intelligence Report
+(Continue until Finding 5)
+═══════════════════════════════════════
+🛡 Security Assessment
+One short sentence per item:
 
-#### 📌 Executive Summary
-Write 2 short paragraphs explaining the overall condition.
+Network Health :
+Threat Exposure :
+Encryption Status :
+Client Behaviour :
+Traffic Stability :
+Privacy Posture :
+AI Verdict :
+═══════════════════════════════════════
+⚠ Risk Matrix
+Exactly FIVE rows:
 
-#### 🩺 Network Health
-Write 3 bullet points.
+| Risk | Severity | Likelihood | Business Impact | Action |
+|------|----------|------------|-----------------|--------|
+|      |          |            |                 |        |
 
-#### 🔒 Security Analysis
-Write 4 bullet points.
+═══════════════════════════════════════
+🚀 AI Recommendations
+Exactly FIVE. Keep each under 25 words total.
 
-#### 🛡 Privacy Analysis
-Write 3 bullet points.
+Issue: 
+Reason: 
+Recommendation: 
+Expected Improvement: 
+Priority: 
 
-#### 🌱 Sustainability Analysis
-Write 2 bullet points.
+═══════════════════════════════════════
+📈 Near-Term Network Assessment
+Maximum 4 short bullets based on current metrics.
+═══════════════════════════════════════
 
-#### ⚠️ Risk Assessment
-Write 3 bullet points.
-
-#### ✅ Recommendations
-Write 5 concise actionable recommendations.
-
-Avoid unnecessary technical jargon.
+Style: Very concise, professional, IBM Security / Splunk tone.
 """
 
     try:
-
         response = model.generate_content(
             prompt,
             generation_config=genai.GenerationConfig(
-                temperature=0.2,
-                max_output_tokens=650,
-            )
+                temperature=0.3,
+                max_output_tokens=5000,
+                top_p=0.95,
+                top_k=40,
+            ),
         )
 
-        return response.text
+        if not response.text:
+            return "❌ Empty response from Gemini."
+
+        return response.text.strip()
 
     except Exception as e:
-
         error = str(e)
-
         if "429" in error:
-            return """
-### ⚠️ Gemini API Limit Reached
-
-The free Gemini API quota has been exceeded.
-
-Please wait a few moments and try generating the report again.
-"""
-
+            return "⚠️ Gemini API Limit Reached\n\nPlease wait a few minutes."
         return f"❌ Error generating report:\n\n{error}"

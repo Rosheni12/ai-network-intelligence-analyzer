@@ -67,6 +67,7 @@ if auto_refresh:
 # -------------------------------
 # Load Data
 # -------------------------------
+
 summary = AnalyticsSummary(
     "data/processed/ai_dataset.csv"
 ).generate_summary()
@@ -110,7 +111,7 @@ if st.button("🚀 Generate AI Report"):
 
     st.success("✅ AI Analysis Completed Successfully!")
     st.info("🤖 Generated using Gemini Flash AI")
-
+    report = generate_ai_report(summary)
     st.markdown("## 📑 AI Network Intelligence Report")
 
     with st.container(border=True):
@@ -118,9 +119,6 @@ if st.button("🚀 Generate AI Report"):
 
 st.divider()
 
-# -------------------------------
-# Summary + Export
-# -------------------------------
 show_summary_table(summary)
 st.divider()
 
